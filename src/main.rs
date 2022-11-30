@@ -2,7 +2,7 @@ use clap::{Parser, Subcommand};
 
 mod parser;
 
-use crate::parser::{parse_problem, ProblemID};
+use crate::parser::{parse_problems, ProblemID};
 
 #[derive(Debug, Parser)]
 struct Cli {
@@ -36,7 +36,7 @@ fn main() {
 
     match args.command {
         Command::Generate => {
-            let _problem = parse_problem(OFFLINE_PROBLEMS);
+            let _problem = parse_problems(OFFLINE_PROBLEMS);
             unimplemented!()
         }
         Command::Run { solution, time } => todo!("run {solution:?} {time}"),
