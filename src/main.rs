@@ -38,7 +38,9 @@ fn main() {
         Command::Generate => {
             let (_rest, problems) = parse_problems(OFFLINE_PROBLEMS).expect("successful parse");
             assert_eq!("", _rest);
-            println!("{}:{problems:?}", problems.len());
+            std::fs::write("problems.toml", toml::to_string(&problems).unwrap()).unwrap();
+
+            // toml::to_string(&problems).unwrap();
         }
         Command::Run { solution, time } => todo!("run {solution:?} {time}"),
         Command::Create { solution } => todo!("create {solution}"),
