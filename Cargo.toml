@@ -8,5 +8,5 @@ edition = "2021"
 [dependencies]
 clap = { version = "4.0.29", features = ["derive"] }
 nom = "7.1.1"
+ron = "0.8.0"
 serde = { version = "1.0.148", features = ["alloc", "derive"] }
-toml = "0.5.9"

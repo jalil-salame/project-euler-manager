@@ -2,7 +2,7 @@ use clap::{Parser, Subcommand};
 
 mod parser;
 
-use crate::parser::{parse_problems, ProblemID};
+use crate::parser::{parse_problems, Problem, ProblemID};
 
 #[derive(Debug, Parser)]
 struct Cli {
@@ -38,9 +38,7 @@ fn main() {
         Command::Generate => {
             let (_rest, problems) = parse_problems(OFFLINE_PROBLEMS).expect("successful parse");
             assert_eq!("", _rest);
-            std::fs::write("problems.toml", toml::to_string(&problems).unwrap()).unwrap();
-
-            // toml::to_string(&problems).unwrap();
+            std::fs::write("problems.ron", ron::to_string(&problems).unwrap()).unwrap();
         }
         Command::Run { solution, time } => todo!("run {solution:?} {time}"),
         Command::Create { solution } => todo!("create {solution}"),
