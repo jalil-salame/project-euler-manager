@@ -36,8 +36,9 @@ fn main() {
 
     match args.command {
         Command::Generate => {
-            let _problem = parse_problems(OFFLINE_PROBLEMS);
-            unimplemented!()
+            let (_rest, problems) = parse_problems(OFFLINE_PROBLEMS).expect("successful parse");
+            assert_eq!("", _rest);
+            println!("{}:{problems:?}", problems.len());
         }
         Command::Run { solution, time } => todo!("run {solution:?} {time}"),
         Command::Create { solution } => todo!("create {solution}"),
