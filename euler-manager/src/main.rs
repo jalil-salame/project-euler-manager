@@ -1,10 +1,5 @@
-#[macro_use]
-extern crate lazy_static;
 use clap::{Parser, Subcommand};
-
-mod parser;
-
-use crate::parser::{parse_problems, Problem, ProblemID};
+use project_euler_data::{Problem, ProblemID, PROBLEMS};
 
 #[derive(Debug, Parser)]
 struct Cli {
@@ -27,13 +22,6 @@ enum Command {
         /// The Problem to create a template solution for
         solution: ProblemID,
     },
-}
-
-static OFFLINE_PROBLEMS_STR: &str = include_str!("problems.txt");
-lazy_static! {
-    static ref PROBLEMS: Vec<Problem<'static>> = parse_problems(OFFLINE_PROBLEMS_STR)
-        .expect("successful parse")
-        .1;
 }
 
 fn main() {

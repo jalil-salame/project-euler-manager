@@ -9,7 +9,6 @@ use nom::{
     sequence::{delimited, pair, preceded, terminated, tuple},
     AsChar, IResult,
 };
-use serde::Serialize;
 
 pub type ProblemID = u32;
 type Description<'a> = Vec<&'a str>;
@@ -22,7 +21,8 @@ static ANSWER_TAG: &str = "Answer: ";
 static VISIBLE_LINKS_TAG: &str = "Visible links";
 static MISSING_HASH_TAG: &str = "?";
 
-#[derive(Debug, Serialize)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[derive(Debug)]
 pub struct Problem<'a> {
     pub id: ProblemID,
     pub description: Vec<&'a str>,
