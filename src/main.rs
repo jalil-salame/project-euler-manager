@@ -1,3 +1,5 @@
+#[macro_use]
+extern crate lazy_static;
 use clap::{Parser, Subcommand};
 
 mod parser;
@@ -12,8 +14,6 @@ struct Cli {
 
 #[derive(Debug, Subcommand)]
 enum Command {
-    /// Generate Problems Database
-    Generate,
     /// Run a solution
     Run {
         /// The solution to run (or all if none is specified)
@@ -29,18 +29,61 @@ enum Command {
     },
 }
 
-static OFFLINE_PROBLEMS: &str = include_str!("problems.txt");
+static OFFLINE_PROBLEMS_STR: &str = include_str!("problems.txt");
+lazy_static! {
+    static ref PROBLEMS: Vec<Problem<'static>> = parse_problems(OFFLINE_PROBLEMS_STR)
+        .expect("successful parse")
+        .1;
+}
 
 fn main() {
     let args = Cli::parse();
 
     match args.command {
-        Command::Generate => {
-            let (_rest, problems) = parse_problems(OFFLINE_PROBLEMS).expect("successful parse");
-            assert_eq!("", _rest);
-            std::fs::write("problems.ron", ron::to_string(&problems).unwrap()).unwrap();
-        }
         Command::Run { solution, time } => todo!("run {solution:?} {time}"),
-        Command::Create { solution } => todo!("create {solution}"),
+        Command::Create { solution } => {
+            if let Some(Problem {
+                id,
+                description,
+                links,
+                hash,
+            }) = PROBLEMS.iter().find(|p| p.id == solution)
+            {
+                eprintln!("Found Problem {id}");
+                println!("// Project Euler: Problem {id}\n//");
+
+                for line in description {
+                    println!("//{line}");
+                }
+
+                if !links.is_empty() {
+                    println!("//\n// Visible links")
+                }
+
+                for line in links {
+                    println!("// {line}");
+                }
+
+                println!();
+                println!(
+                    "fn solution() -> impl Display {{
+    0
+}}"
+                );
+                println!();
+
+                if let Some(hash) = hash {
+                    println!(
+                        "fn main() {{
+    let result = format!(\"{{}}\", solution());
+    let hash = todo!();
+    assert_eq!(hash, \"{hash}\");
+}}"
+                    );
+                }
+            } else {
+                eprintln!("Couldn't find problem {solution}");
+            }
+        }
     }
 }
