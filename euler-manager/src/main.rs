@@ -1,77 +1,74 @@
-use clap::{Parser, Subcommand};
+use std::path::Path;
+
+use clap::Parser;
+use hex::FromHex;
 use project_euler_data::{Problem, ProblemID, PROBLEMS};
 
 #[derive(Debug, Parser)]
 struct Cli {
-    #[command(subcommand)]
-    command: Command,
-}
-
-#[derive(Debug, Subcommand)]
-enum Command {
-    /// Run a solution
-    Run {
-        /// The solution to run (or all if none is specified)
-        solution: Option<ProblemID>,
-        /// Whether to time the solution
-        #[arg(short, long)]
-        time: bool,
-    },
-    /// Create a solution template
-    Create {
-        /// The Problem to create a template solution for
-        solution: ProblemID,
-    },
+    /// The Problem to create a template solution for
+    solution: ProblemID,
+    /// Whether to overwrite files
+    #[arg(short, long)]
+    force: bool,
 }
 
 fn main() {
-    let args = Cli::parse();
+    let Cli { solution, force } = Cli::parse();
 
-    match args.command {
-        Command::Run { solution, time } => todo!("run {solution:?} {time}"),
-        Command::Create { solution } => {
-            if let Some(Problem {
-                id,
-                description,
-                links,
-                hash,
-            }) = PROBLEMS.iter().find(|p| p.id == solution)
-            {
-                eprintln!("Found Problem {id}");
-                println!("// Project Euler: Problem {id}\n//");
+    let problem = PROBLEMS.iter().find(|p| p.id == solution);
+    let template = rust_template(problem.cloned(), solution);
 
-                for line in description {
-                    println!("//{line}");
-                }
+    let file = Path::new("src")
+        .join("solution")
+        .join(&format!("sol_{solution}.rs"));
 
-                if !links.is_empty() {
-                    println!("//\n// Visible links")
-                }
+    if file.exists() && !force {
+        panic!("File exists, use --force to overwrite");
+    }
 
-                for line in links {
-                    println!("// {line}");
-                }
+    std::fs::write(&file, template).expect("write template");
+}
 
-                println!();
-                println!(
-                    "fn solution() -> impl Display {{
-    0
-}}"
-                );
-                println!();
+fn rust_template(problem: Option<Problem>, id: ProblemID) -> String {
+    let mut description_str =
+        "Note: this problem is missing from the database, consider contributing to it".to_string();
+    let mut links_str = "\n".to_string();
+    let mut md5_hash = None;
+    let mut hash_comment = "is missing, consider contributing it";
 
-                if let Some(hash) = hash {
-                    println!(
-                        "fn main() {{
-    let result = format!(\"{{}}\", solution());
-    let hash = todo!();
-    assert_eq!(hash, \"{hash}\");
-}}"
-                    );
-                }
-            } else {
-                eprintln!("Couldn't find problem {solution}");
-            }
+    if let Some(Problem {
+        id: _,
+        description,
+        links,
+        hash,
+    }) = problem
+    {
+        description_str = description.join("\n//");
+        if !links.is_empty() {
+            links_str = format!("// Visible Links\n//   {}\n", links.join("\n//   "));
+        }
+
+        md5_hash = hash.map(|s| <[u8; 16]>::from_hex(s).expect("valid hex string"));
+
+        if hash.is_some() {
+            hash_comment = "";
         }
     }
+
+    format!(
+        "// Project Euler: Problem {id}
+//
+// {description_str}
+{links_str}
+/// The MD5 hash of the answer to Problem {id}{hash_comment}
+pub static EXPECTED_ANSWER_HASH: Option<[u8; 16]> = {md5_hash:?};
+
+/// Solution to Problem {id}
+///
+/// NOTE: Auto-generated, don't change signature
+pub fn solution() -> impl Display {{
+    0
+}}"
+    )
 }
