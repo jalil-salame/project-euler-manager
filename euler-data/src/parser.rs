@@ -22,7 +22,7 @@ static VISIBLE_LINKS_TAG: &str = "Visible links";
 static MISSING_HASH_TAG: &str = "?";
 
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Problem<'a> {
     pub id: ProblemID,
     pub description: Vec<&'a str>,
