@@ -1,7 +1,5 @@
 #[macro_use]
 extern crate lazy_static;
-use hex::FromHex;
-
 mod parser;
 use crate::parser::parse_problems;
 pub use crate::parser::{Problem, ProblemID};
@@ -24,40 +22,28 @@ pub fn rust_template(id: ProblemID) -> String {
     let mut description_str =
         "Note: this problem is missing from the database, consider contributing to it".to_string();
     let mut links_str = "\n".to_string();
-    let mut md5_hash = None;
-    let mut hash_comment = "is missing, consider contributing it";
 
     if let Some(Problem {
         id: _,
         description,
         links,
-        hash,
+        hash: _,
     }) = problem
     {
         description_str = description.join("\n//");
         if !links.is_empty() {
-            links_str = format!("// Visible Links\n//   {}\n", links.join("\n//   "));
-        }
-
-        md5_hash = hash.map(|s| <[u8; 16]>::from_hex(s).expect("valid hex string"));
-
-        if hash.is_some() {
-            hash_comment = "";
+            links_str = format!(" Visible Links\n//   {}\n", links.join("\n//   "));
         }
     }
 
     format!(
         "// Project Euler: Problem {id}
-//
-// {description_str}
-{links_str}
 use std::fmt::Display;
 
-/// The MD5 hash of the answer to Problem {id}{hash_comment}
-pub static EXPECTED_ANSWER_HASH: Option<[u8; 16]> = {md5_hash:?};
-
 /// Solution to Problem {id}
-///
+//
+// {description_str}
+//{links_str}
 /// NOTE: Auto-generated, don't change signature
 pub fn solution() -> impl Display {{
     0

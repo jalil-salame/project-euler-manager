@@ -9,6 +9,5 @@ serde = ["dep:serde"]
 
 [dependencies]
 lazy_static = "1.4.0"
-hex = "0.4.3"
 nom = "7.1.1"
 serde = { version = "1.0.148", features = ["derive"], optional = true }
