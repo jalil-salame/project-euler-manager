@@ -51,6 +51,8 @@ pub fn rust_template(id: ProblemID) -> String {
 //
 // {description_str}
 {links_str}
+use std::fmt::Display;
+
 /// The MD5 hash of the answer to Problem {id}{hash_comment}
 pub static EXPECTED_ANSWER_HASH: Option<[u8; 16]> = {md5_hash:?};
 
