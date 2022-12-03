@@ -21,7 +21,7 @@ pub fn rust_template(id: ProblemID) -> String {
 
     let mut description_str =
         "Note: this problem is missing from the database, consider contributing to it".to_string();
-    let mut links_str = "\n".to_string();
+    let mut links_str = String::new();
 
     if let Some(Problem {
         id: _,
@@ -30,9 +30,9 @@ pub fn rust_template(id: ProblemID) -> String {
         hash: _,
     }) = problem
     {
-        description_str = description.join("\n//");
+        description_str = description.join("\n///");
         if !links.is_empty() {
-            links_str = format!(" Visible Links\n//   {}\n", links.join("\n//   "));
+            links_str = format!(" Visible Links\n///   {}", links.join("\n///   "));
         }
     }
 
@@ -41,9 +41,9 @@ pub fn rust_template(id: ProblemID) -> String {
 use std::fmt::Display;
 
 /// Solution to Problem {id}
-//
-// {description_str}
-//{links_str}
+///
+/// {description_str}
+///{links_str}
 /// NOTE: Auto-generated, don't change signature
 pub fn solution() -> impl Display {{
     0
