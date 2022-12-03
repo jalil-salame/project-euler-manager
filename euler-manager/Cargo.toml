@@ -7,5 +7,4 @@ edition = "2021"
 
 [dependencies]
 clap = { version = "4.0.29", features = ["derive"] }
-hex = "0.4.3"
 project-euler-data = { path = "../euler-data" }

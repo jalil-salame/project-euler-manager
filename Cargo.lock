@@ -13,7 +13,6 @@ name = "cargo-euler-man"
 version = "0.1.0"
 dependencies = [
  "clap",
- "hex",
  "project-euler-data",
 ]
 
@@ -213,6 +212,7 @@ dependencies = [
 name = "project-euler-data"
 version = "0.1.0"
 dependencies = [
+ "hex",
  "lazy_static",
  "nom",
  "serde",
